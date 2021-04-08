@@ -30,7 +30,7 @@ i = 1
 while i == 1:
     try:
         print("trying this")
-        addToCart_btn = browser.find_element_by_xpath("//button[contains(text(),'Add to Cart')]");
+        addToCart_btn = browser.find_element_by_xpath("//button[normalize-space()='Add to Cart']");
         addToCart_btn.click()
         i = 2
     except NoSuchElementException:
@@ -43,7 +43,23 @@ while i == 1:
 
 print("adding to cart :)")
 
+j = 1
+while j == 1:
+    try:
+        print("waiting for last step")
+        addToCart_btn = browser.find_element_by_xpath("//button[normalize-space()='Add to Cart']");
+        addToCart_btn.click()
+        print("final add to cart")
+        checkout_btn = browser.find_element_by_xpath("//a[normalize-space()='Go to Cart']")
+        checkout_btn.click()
+        print("heading to checkout")
+        j = 2
+    except NoSuchElementException:
+        print("sleeping now for " + str(2) + " seconds")
+        time.sleep(2)
+        j= 1
 
+print("ready to checkout")
 
 
 
