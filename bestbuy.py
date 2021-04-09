@@ -50,6 +50,7 @@ while j == 1:
         addToCart_btn = browser.find_element_by_xpath("//button[normalize-space()='Add to Cart']");
         addToCart_btn.click()
         print("final add to cart")
+        time.sleep(3)
         checkout_btn = browser.find_element_by_xpath("//a[normalize-space()='Go to Cart']")
         checkout_btn.click()
         print("heading to checkout")
