@@ -1,5 +1,3 @@
 #virtual enviroment
 src/env
-
-#vscode env file path
-vscode
+.vscode
