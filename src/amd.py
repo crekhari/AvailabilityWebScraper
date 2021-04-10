@@ -3,29 +3,37 @@ import time
 from selenium.common.exceptions import NoSuchElementException
 import random
 
+class amdAutomation():
 
-browser = webdriver.Chrome('/Users/chiraag/chromedriver')
+    def __init__(self):
+        self.driver = None
 
-browser.get('https://www.amd.com/en/direct-buy/5458372200/us')
-
-
-i = 1
-while i == 1:
-    try:
-        print("trying this")
-        addToCart_btn = browser.find_element_by_xpath("//button[contains(text(),'Add to Cart')]");
-        addToCart_btn.click()
-        i = 2
-    except NoSuchElementException:
+    def setWebsiteLocation(self, link):
+        self.driver = webdriver.Chrome('/Users/chiraag/chromedriver')
+        self.driver.get(link)
         
-        print("sleeping now for " + str(5) + " seconds")
+    def executeTest(self, link):
+        self.setWebsiteLocation(link)
+        self.addToCart()
 
-        time.sleep(5)
-        browser.refresh()
+    def addToCart(self):
         i = 1
+        while i == 1:
+            try:
+                print("trying this")
+                addToCart_btn = self.driver.find_element_by_xpath("//button[contains(text(),'Add to Cart')]");
+                addToCart_btn.click()
+                i = 2
+            except NoSuchElementException:
+                print("sleeping now for " + str(3) + " seconds")
+                time.sleep(3)
+                self.driver.refresh()
+                i = 1
+        print("adding to cart :)")
 
-print("adding to cart :)")
-
+if __name__ == "__main__":
+    taskmaster = amdAutomation()
+    taskmaster.executeTest('https://www.amd.com/en/direct-buy/5458372200/us')
 
 
 
