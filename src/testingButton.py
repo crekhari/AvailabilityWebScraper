@@ -1,3 +1,4 @@
+from os import link
 from selenium import webdriver
 import time
 from selenium.common.exceptions import NoSuchElementException
@@ -14,7 +15,18 @@ class testingButton():
     
     def executeTest(self, link):
         self.setWebsiteLocation(link)
+        parent = self.driver.current_window_handle
+        self.openMultipleWindows()
         self.addToCartAndCheckout()
+
+    def openMultipleWindows(self):
+        allWindows = set()
+        for x in range(3):
+            self.driver.get('https://www.bestbuy.com/site/ring-wi-fi-video-doorbell-wired-black/6450309.p?skuId=6450309')
+            
+            allWindows.add(self.driver.current_window_handle)
+            self.driver.switch_to_window(allWindows(x))
+
 
     def addToCartAndCheckout(self):
         try:

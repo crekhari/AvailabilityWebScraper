@@ -33,7 +33,7 @@ class amdAutomation():
 
 if __name__ == "__main__":
     taskmaster = amdAutomation()
-    taskmaster.executeTest('https://www.amd.com/en/direct-buy/5458372200/us')
+    taskmaster.executeTest('https://www.amd.com/en/direct-buy/5458372800/us')
 
 
 
