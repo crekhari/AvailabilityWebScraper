@@ -1,12 +1,9 @@
 from selenium import webdriver
-import time
 from selenium.common.exceptions import NoSuchElementException
-import random
-import pickle
-import os
-import sys
+import random,pickle,os,time,sys
 
-class bestbuyAutomation():
+
+class BestBuyAutomation():
 
     def __init__(self):
         self.driver = None
@@ -107,5 +104,5 @@ class bestbuyAutomation():
         print("ready to checkout")
 
 if __name__ == "__main__":
-    taskmaster = bestbuyAutomation()
+    taskmaster = BestBuyAutomation()
     taskmaster.executeTest("cookies.pkl", 'https://www.bestbuy.com/site/nvidia-geforce-rtx-3080-10gb-gddr6x-pci-express-4-0-graphics-card-titanium-and-black/6429440.p?skuId=6429440')
