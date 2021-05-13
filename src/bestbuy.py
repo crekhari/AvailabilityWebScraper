@@ -9,10 +9,9 @@ from selenium.webdriver.support import expected_conditions as EC
 class BestBuyAutomation():
 
     def __init__(self):
-        self.driver = None
+        self.driver = webdriver.Chrome('/Users/chiraag/chromedriver')
 
     def setWebsiteLocation(self, link):
-        self.driver = webdriver.Chrome('/Users/chiraag/chromedriver')
         self.driver.get(link)
 
     def executeTest(self, file, link):
@@ -121,4 +120,4 @@ class BestBuyAutomation():
 
 if __name__ == "__main__":
     taskmaster = BestBuyAutomation()
-    taskmaster.executeTest("cookies.pkl", 'https://www.bestbuy.com/site/nvidia-geforce-rtx-3080-10gb-gddr6x-pci-express-4-0-graphics-card-titanium-and-black/6429440.p?skuId=6429440')
+    taskmaster.executeTest("bestbuyCookies.pkl", 'https://www.bestbuy.com/site/nvidia-geforce-rtx-3080-10gb-gddr6x-pci-express-4-0-graphics-card-titanium-and-black/6429440.p?skuId=6429440')
