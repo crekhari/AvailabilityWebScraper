@@ -30,6 +30,7 @@ class BestBuyAutomation():
         self.driver.get(link)
 
     def checkCookies(self, file, link):
+        i = 1
         print("starting pickle testing")
         try:
             filesize = os.path.getsize(file)
@@ -44,7 +45,11 @@ class BestBuyAutomation():
             print("File is not there\nFile is being created and cookies are being added to cookies.pkl\nLogging in and then adding cookies")
             self.login()
             self.addCookies(file)
-            self.checkCookies(file,link)
+            if i <= 3:
+                self.checkCookies(file,link)
+                i+=1
+            else:
+                print("Cookies can not be loaded into cookies.pkl file.\nClosing application")
         self.loadCookies(file, link)
         
 
