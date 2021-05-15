@@ -12,45 +12,62 @@ import threading
 class AmazonAutomation():
 
     def __init__(self, headless, item):
+        botNavigator = open('botNavigator.txt', 'r')
+        Lines = botNavigator.readlines()
+        botNavigator.close()
+
         if headless == True:
             options = webdriver.ChromeOptions()
             options.add_argument('headless')
             self.driver = webdriver.Chrome('/Users/chiraag/chromedriver', options=options)
         if headless == False:
             self.driver = webdriver.Chrome('/Users/chiraag/chromedriver')
+    
+        if item == "3090":
+            self.lowerBound = 1500
+            self.upperBound = 2000
+            self.file = Lines[0]
+            self.homeLink = Lines[1]
+            self.link = Lines[2]
+    
+        if item == "3080":
+            self.lowerBound = 800
+            self.upperBound = 1200
+            self.file = Lines[0]
+            self.homeLink = Lines[1]
+            self.link = Lines[3]
 
-        #if item == "PS4":
-            #self.lowerBound = 340
-            #self.upperBound = 420
+        if item == "PS4":
+            self.lowerBound = 340
+            self.upperBound = 420
+            self.file = Lines[0]
+            self.homeLink = Lines[1]
+            self.link = Lines[4]
 
-        #if item == "3090":
-            #self.lowerBound = 1500
-            #self.upperBound = 2000
-
-
+        botNavigator.close()
 
     def tearDown(self):
         self.driver.close()
 
-    def setWebsiteLocation(self, homeLink):  
-        self.driver.get(homeLink)
+    def setWebsiteLocation(self):  
+        self.driver.get(self.homeLink)
         
-    def executeTest(self,file, homeLink, link):
-        self.setWebsiteLocation(homeLink)
-        self.loadCookies(file, link)
-        self.checkAvailability(homeLink, link)
+    def executeTest(self):
+        self.setWebsiteLocation()
+        self.loadCookies()
+        self.checkAvailability()
         self.tearDown()
         
     def placeOrder(self):
         self.driver.find_element_by_xpath("//input[@id='add-to-cart-button']").click()
-        self.driver.find_element_by_id("hlb-ptc-btn-native").click()
-        self.driver.find_element_by_xpath("//input[@name='placeYourOrder1']").click() # THIS WILL PLACE THE ORDER -- DO NOT REMOVE UNLESS YOU ARE WILLING TO PURCHASE
+        self.driver.find_element_by_xpath("//a[@id='hlb-ptc-btn-native']").click()
+        self.driver.find_element_by_xpath("//input[@name='placeYourOrder1']").click() #THIS WILL PLACE THE ORDER -- DO NOT REMOVE UNLESS YOU ARE WILLING TO PURCHASE
 
-    def checkAvailability(self, homeLink, link):
+    def checkAvailability(self):
         
-        if(link != self.driver.current_url):
+        if(self.link != self.driver.current_url):
             print("it is not equal")
-            self.driver.get(link)
+            self.driver.get(self.link)
         boolean = True
         while(boolean):
             k = random.randint(5, 15)            
@@ -59,7 +76,7 @@ class AmazonAutomation():
                     itemFound = open('itemFound.txt', 'a')
                     itemFound.write(str(price) + '\n')
                     itemFound.close()
-                    if(price > 1900 or price < 1500):
+                    if(price > self.upperBound or price < self.lowerBound):
                         print("sleeping now for " + str(k) + " seconds")
                         time.sleep(k)
                         self.driver.refresh()
@@ -81,58 +98,62 @@ class AmazonAutomation():
         print(intPrice)
         return intPrice
     
-    def addCookies(self, file):
-        pickle.dump(self.driver.get_cookies(), open(file,"wb"))
+    def addCookies(self):
+        pickle.dump(self.driver.get_cookies(), open(self.file,"wb"))
 
-    def loadCookies(self,file, link):
-        cookies = pickle.load(open(file, "rb"))
+    def loadCookies(self):
+        cookies = pickle.load(open(self.file, "rb"))
         print("adding cookies then for loop")
 
         for cookie in cookies:
             self.driver.add_cookie(cookie)
-        self.driver.get(link)
+        self.driver.get(self.link)
         print("Cookies should be added")
 
-    def checkIfCookiesLoaded(self, file):
+    def checkIfCookiesLoaded(self):
+        if(self.homeLink != self.driver.current_url):
+            print("it is not equal in checkCookiesLoaded")
+            self.driver.get(self.homeLink)
         if self.driver.find_element_by_id('nav-link-accountList-nav-line-1').text == "Hello, Chiraag":
             print("cookies loaded properly")
             return True
         else:
-            os.remove(file)
+            os.remove(self.file)
             return False
 
 
-    def checkCookies(self, file, homeLink, link):
-        print("starting checkCookies")
+    def checkCookies(self):
         # This try except checks if there is a cookies.pkl file.
         # If there is not, then will create the file, login, and add cookies. 
         # If there is the file, then the method will add the cookies into the web browser
+
+        print("starting checkCookies")
         
         try:
-            filesize = os.path.getsize(file)
+            filesize = os.path.getsize(self.file)
             print(filesize)
             if filesize == 0:
                 print("File is there, but it is empty\nLogging in and then adding cookies")
-                self.login(homeLink, link)
+                self.login()
                 print("login complete")
-                self.addCookies(file)
+                self.addCookies()
             else:
                 print("File exists and is filled with cookies")
         except OSError as e:
             print("File is not there\nFile is being created and cookies are being added to cookies.pkl\nLogging in and then adding cookies")
-            self.login(homeLink,link)
-            self.addCookies(file)
-            self.setWebsiteLocation(link)
+            self.login()
+            self.addCookies()
+            self.setWebsiteLocation()
             return
-        self.loadCookies(file, link)
-        if self.checkIfCookiesLoaded(file) == False:
-            self.checkCookies(file,homeLink,link)
+        self.loadCookies()
+        if self.checkIfCookiesLoaded() == False:
             print("Cookies file has been deleted and new on is getting added")
+            self.checkCookies()
 
-    def login(self, homeLink, link):
-        if(homeLink != self.driver.current_url):
+    def login(self):
+        if(self.homeLink != self.driver.current_url):
             print("it is not equal")
-            self.driver.get(homeLink)
+            self.driver.get(self.homeLink)
         loginCredentials = open('loginCredentials.txt', 'r')
         Lines = loginCredentials.readlines()
         loginCredentials.close()
@@ -148,7 +169,7 @@ class AmazonAutomation():
         password.send_keys(Lines[1])
         
         self.driver.find_element_by_name("rememberMe").click()
-        passwordSumbit = self.driver.find_element_by_id('signInSubmit').click()
+        self.driver.find_element_by_id('signInSubmit').click()
 
         time.sleep(3) #DO NOT REMOVE --  This is needed in order for the cookies to load properly
 
@@ -156,20 +177,35 @@ class AmazonAutomation():
     #https://www.amazon.com/gp/product/B079KYZ9FW?pf_rd_r=4ZYXRC10NATBQ9J26K1P&pf_rd_p=5ae2c7f8-e0c6-4f35-9071-dc3240e894a8&pd_rd_r=39d8b0c5-6ca8-41a8-973c-da08ddc08960&pd_rd_w=dcGK4&pd_rd_wg=cUqPu&ref_=pd_gw_unk
 
 if __name__ == "__main__":
-    botNavigator = open('botNavigator.txt', 'r')
-    Lines = botNavigator.readlines()
-    botNavigator.close()
-    file = Lines[0]
-    homeLink = Lines[1]
-    link = Lines[2]
-    taskmaster = AmazonAutomation(True, "")
-    taskmaster.setWebsiteLocation(homeLink)
-    taskmaster.checkCookies(file, homeLink, link)
+    
+    taskmaster = AmazonAutomation(True, "3090")
+    taskmaster.setWebsiteLocation()
+    taskmaster.checkCookies()
     taskmaster.tearDown()
-    for _ in range(10):
+
+    #3090
+    for _ in range(1):
         taskmaster = AmazonAutomation(True, "3090")
-        testThread = threading.Thread(target=taskmaster.executeTest, args=(file, homeLink, link))
+        testThread = threading.Thread(target=taskmaster.executeTest, args=())
         testThread.start()
     taskmaster = AmazonAutomation(False, "3090")
-    testThread = threading.Thread(target=taskmaster.executeTest, args=(file, homeLink, link))
+    testThread = threading.Thread(target=taskmaster.executeTest, args=())
+    testThread.start()
+
+    #3080
+    for _ in range(1):
+        taskmaster = AmazonAutomation(True, "3080")
+        testThread = threading.Thread(target=taskmaster.executeTest, args=())
+        testThread.start()
+    taskmaster = AmazonAutomation(False, "3080")
+    testThread = threading.Thread(target=taskmaster.executeTest, args=())
+    testThread.start()
+
+    #PS4
+    for _ in range(1):
+        taskmaster = AmazonAutomation(True, "PS4")
+        testThread = threading.Thread(target=taskmaster.executeTest, args=())
+        testThread.start()
+    taskmaster = AmazonAutomation(False, "PS4")
+    testThread = threading.Thread(target=taskmaster.executeTest, args=())
     testThread.start()
