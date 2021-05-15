@@ -26,7 +26,7 @@ class AmazonAutomation():
         self.setWebsiteLocation(homeLink)
         #self.checkCookies(file, homeLink, link)
         self.checkAvailability(homeLink, link)
-        #self.tearDown()
+        self.tearDown()
         
     def placeOrder(self):
         self.driver.find_element_by_xpath("//input[@id='add-to-cart-button']").click()
@@ -41,9 +41,7 @@ class AmazonAutomation():
             self.driver.get(link)
         boolean = True
         while(boolean):
-            k = random.randint(5, 15)
-            passDriver = None
-            
+            k = random.randint(5, 15)            
             try:
                     price = self.getPrice()
                     if(price > 1900 or price < 1500):
@@ -66,7 +64,6 @@ class AmazonAutomation():
         print(intPrice)
         return intPrice
     
-
     def addCookies(self, file):
         pickle.dump(self.driver.get_cookies(), open(file,"wb"))
 
@@ -142,9 +139,11 @@ class AmazonAutomation():
     #https://www.amazon.com/EVGA-GeForce-Technology-Backplate-24G-P5-3987-KR/dp/B08J5F3G18
 
 if __name__ == "__main__":
-    file = "amazonCookies.pkl"
-    homeLink = 'https://www.amazon.com'
-    link = 'https://www.amazon.com/gp/product/B079KYZ9FW?pf_rd_r=4ZYXRC10NATBQ9J26K1P&pf_rd_p=5ae2c7f8-e0c6-4f35-9071-dc3240e894a8&pd_rd_r=39d8b0c5-6ca8-41a8-973c-da08ddc08960&pd_rd_w=dcGK4&pd_rd_wg=cUqPu&ref_=pd_gw_unk'
+    botNavigator = open('botNavigator.txt', 'r')
+    Lines = botNavigator.readlines()
+    file = Lines[0]
+    homeLink = Lines[1]
+    link = Lines[2]
     taskmaster = AmazonAutomation()
     taskmaster.setWebsiteLocation(homeLink)
     taskmaster.checkCookies(file, homeLink, link)
