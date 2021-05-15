@@ -11,10 +11,23 @@ import threading
 
 class AmazonAutomation():
 
-    def __init__(self):
-        options = webdriver.ChromeOptions()
-        options.add_argument('headless')
-        self.driver = webdriver.Chrome('/Users/chiraag/chromedriver', options=options)
+    def __init__(self, headless, item):
+        if headless == True:
+            options = webdriver.ChromeOptions()
+            options.add_argument('headless')
+            self.driver = webdriver.Chrome('/Users/chiraag/chromedriver', options=options)
+        if headless == False:
+            self.driver = webdriver.Chrome('/Users/chiraag/chromedriver')
+
+        #if item == "PS4":
+            #self.lowerBound = 340
+            #self.upperBound = 420
+
+        #if item == "3090":
+            #self.lowerBound = 1500
+            #self.upperBound = 2000
+
+
 
     def tearDown(self):
         self.driver.close()
@@ -24,7 +37,7 @@ class AmazonAutomation():
         
     def executeTest(self,file, homeLink, link):
         self.setWebsiteLocation(homeLink)
-        #self.checkCookies(file, homeLink, link)
+        self.loadCookies(file, link)
         self.checkAvailability(homeLink, link)
         self.tearDown()
         
@@ -149,11 +162,14 @@ if __name__ == "__main__":
     file = Lines[0]
     homeLink = Lines[1]
     link = Lines[2]
-    taskmaster = AmazonAutomation()
+    taskmaster = AmazonAutomation(True, "")
     taskmaster.setWebsiteLocation(homeLink)
     taskmaster.checkCookies(file, homeLink, link)
     taskmaster.tearDown()
-    for _ in range(5):
-        taskmaster = AmazonAutomation()
+    for _ in range(10):
+        taskmaster = AmazonAutomation(True, "3090")
         testThread = threading.Thread(target=taskmaster.executeTest, args=(file, homeLink, link))
         testThread.start()
+    taskmaster = AmazonAutomation(False, "3090")
+    testThread = threading.Thread(target=taskmaster.executeTest, args=(file, homeLink, link))
+    testThread.start()

@@ -57,6 +57,9 @@ class BestBuyAutomation():
 
     def login(self):
         print("Sleeping for 10")
+        loginCredentials = open('loginCredentials.txt', 'r')
+        Lines = loginCredentials.readlines()
+        loginCredentials.close()
         dropdownClick = WebDriverWait(self.driver,15)
         dropdownClick = (dropdownClick.until(EC.element_to_be_clickable((By.XPATH, "//button[@class='btn-unstyled plButton account-button']//*[local-name()='svg']")))).click()
         # time.sleep(10)
@@ -71,8 +74,8 @@ class BestBuyAutomation():
         username = self.driver.find_element_by_name('fld-e')
         password = self.driver.find_element_by_name('fld-p1')
 
-        username.send_keys("crekhari@gmail.com")
-        password.send_keys("bestbuyDrlal12#")
+        username.send_keys(Lines[0])
+        password.send_keys(Lines[1])
 
         submitBtnClick = WebDriverWait(self.driver,10)
         submitBtnClick = (submitBtnClick.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/section/main/div[2]/div[1]/div/div/div/div/form/div[4]")))).click()
