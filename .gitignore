@@ -3,3 +3,5 @@ src/env
 .vscode/
 src/threadtesting.py
 src/loginCredentials.txt
+src/amazonCookies.pkl
+src/bestbuyCookies.pkl

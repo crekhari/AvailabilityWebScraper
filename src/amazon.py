@@ -118,6 +118,9 @@ class AmazonAutomation():
             print("Cookies file has been deleted and new on is getting added")
 
     def login(self, homeLink, link):
+        if(homeLink != self.driver.current_url):
+            print("it is not equal")
+            self.driver.get(homeLink)
         loginCredentials = open('loginCredentials.txt', 'r')
         Lines = loginCredentials.readlines()
         signInBtn = self.driver.find_element_by_xpath("//span[@class='nav-line-2 nav-long-width']")
@@ -127,7 +130,7 @@ class AmazonAutomation():
         username.send_keys(Lines[0])
        
         self.driver.find_element_by_id('signInSubmit').click()
-        
+
         password = self.driver.find_element_by_id('ap_password')
         password.send_keys(Lines[1])
         
