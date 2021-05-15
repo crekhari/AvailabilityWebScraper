@@ -12,9 +12,9 @@ import threading
 class AmazonAutomation():
 
     def __init__(self):
-        #option = webdriver.ChromeOptions()
-        #option.add_argument('--disable-infobars')
-        self.driver = webdriver.Chrome('/Users/chiraag/chromedriver')#, options=option)
+        options = webdriver.ChromeOptions()
+        options.add_argument('headless')
+        self.driver = webdriver.Chrome('/Users/chiraag/chromedriver', options=options)
 
     def tearDown(self):
         self.driver.close()
@@ -31,8 +31,7 @@ class AmazonAutomation():
     def placeOrder(self):
         self.driver.find_element_by_xpath("//input[@id='add-to-cart-button']").click()
         self.driver.find_element_by_id("hlb-ptc-btn-native").click()
-        #self.driver.find_element_by_xpath("//input[@name='placeYourOrder1']").click() # THIS WILL PLACE THE ORDER -- DO NOT REMOVE UNLESS YOU ARE WILLING TO PURCHASE
-        print("Item order has been placed")
+        self.driver.find_element_by_xpath("//input[@name='placeYourOrder1']").click() # THIS WILL PLACE THE ORDER -- DO NOT REMOVE UNLESS YOU ARE WILLING TO PURCHASE
 
     def checkAvailability(self, homeLink, link):
         
@@ -44,13 +43,18 @@ class AmazonAutomation():
             k = random.randint(5, 15)            
             try:
                     price = self.getPrice()
+                    itemFound = open('itemFound.txt', 'a')
+                    itemFound.write(str(price) + '\n')
+                    itemFound.close()
                     if(price > 1900 or price < 1500):
-                        print("Reached inside of or statment")
                         print("sleeping now for " + str(k) + " seconds")
                         time.sleep(k)
                         self.driver.refresh()
                     else:
                         self.placeOrder()
+                        itemFound = open('itemFound.txt', 'a')
+                        itemFound.write("Order has been placed\n")
+                        itemFound.close()
                         boolean = False
             except Exception:
                 print("Could not find price")
@@ -75,8 +79,6 @@ class AmazonAutomation():
             self.driver.add_cookie(cookie)
         self.driver.get(link)
         print("Cookies should be added")
-        
-        #self.driver.get(link)
 
     def checkIfCookiesLoaded(self, file):
         if self.driver.find_element_by_id('nav-link-accountList-nav-line-1').text == "Hello, Chiraag":
@@ -120,6 +122,7 @@ class AmazonAutomation():
             self.driver.get(homeLink)
         loginCredentials = open('loginCredentials.txt', 'r')
         Lines = loginCredentials.readlines()
+        loginCredentials.close()
         signInBtn = self.driver.find_element_by_xpath("//span[@class='nav-line-2 nav-long-width']")
         signInBtn.click()
 
@@ -137,10 +140,12 @@ class AmazonAutomation():
         time.sleep(3) #DO NOT REMOVE --  This is needed in order for the cookies to load properly
 
     #https://www.amazon.com/EVGA-GeForce-Technology-Backplate-24G-P5-3987-KR/dp/B08J5F3G18
+    #https://www.amazon.com/gp/product/B079KYZ9FW?pf_rd_r=4ZYXRC10NATBQ9J26K1P&pf_rd_p=5ae2c7f8-e0c6-4f35-9071-dc3240e894a8&pd_rd_r=39d8b0c5-6ca8-41a8-973c-da08ddc08960&pd_rd_w=dcGK4&pd_rd_wg=cUqPu&ref_=pd_gw_unk
 
 if __name__ == "__main__":
     botNavigator = open('botNavigator.txt', 'r')
     Lines = botNavigator.readlines()
+    botNavigator.close()
     file = Lines[0]
     homeLink = Lines[1]
     link = Lines[2]
@@ -148,8 +153,7 @@ if __name__ == "__main__":
     taskmaster.setWebsiteLocation(homeLink)
     taskmaster.checkCookies(file, homeLink, link)
     taskmaster.tearDown()
-    for _ in range(2):
+    for _ in range(5):
         taskmaster = AmazonAutomation()
         testThread = threading.Thread(target=taskmaster.executeTest, args=(file, homeLink, link))
         testThread.start()
-        #taskmaster.executeTest("amazonCookies.pkl", 'https://www.amazon.com', 'https://www.amazon.com/gp/product/B079KYZ9FW?pf_rd_r=4ZYXRC10NATBQ9J26K1P&pf_rd_p=5ae2c7f8-e0c6-4f35-9071-dc3240e894a8&pd_rd_r=39d8b0c5-6ca8-41a8-973c-da08ddc08960&pd_rd_w=dcGK4&pd_rd_wg=cUqPu&ref_=pd_gw_unk')

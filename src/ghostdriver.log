@@ -1,0 +1,25 @@
+[INFO  - 2021-05-15T04:43:23.016Z] GhostDriver - Main - running on port 49982
+[INFO  - 2021-05-15T04:43:27.355Z] Session [16fe9070-b538-11eb-ad00-791c8d53a20e] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1","webSecurityEnabled":true}
+[INFO  - 2021-05-15T04:43:27.355Z] Session [16fe9070-b538-11eb-ad00-791c8d53a20e] - page.customHeaders:  - {}
+[INFO  - 2021-05-15T04:43:27.355Z] Session [16fe9070-b538-11eb-ad00-791c8d53a20e] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"2.1.1","driverName":"ghostdriver","driverVersion":"1.2.0","platform":"mac-unknown-64bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"proxyType":"direct"}}
+[INFO  - 2021-05-15T04:43:27.355Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: 16fe9070-b538-11eb-ad00-791c8d53a20e
+[ERROR - 2021-05-15T04:43:28.144Z] Session [16fe9070-b538-11eb-ad00-791c8d53a20e] - page.onError - msg: Error: Syntax error, unrecognized expression: 
+
+
+
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2021-05-15T04:43:28.145Z] Session [16fe9070-b538-11eb-ad00-791c8d53a20e] - page.onError - stack:
+  error (https://images-na.ssl-images-amazon.com/images/I/61-6nKPKyWL.js?AUIClients/AmazonUIjQuery:196)
+  filter (https://images-na.ssl-images-amazon.com/images/I/61-6nKPKyWL.js?AUIClients/AmazonUIjQuery:104)
+  n (https://images-na.ssl-images-amazon.com/images/I/61-6nKPKyWL.js?AUIClients/AmazonUIjQuery:101)
+  n (https://images-na.ssl-images-amazon.com/images/I/61-6nKPKyWL.js?AUIClients/AmazonUIjQuery:123)
+  find (https://images-na.ssl-images-amazon.com/images/I/61-6nKPKyWL.js?AUIClients/AmazonUIjQuery:127)
+  init (https://images-na.ssl-images-amazon.com/images/I/61-6nKPKyWL.js?AUIClients/AmazonUIjQuery:32)
+  b (https://images-na.ssl-images-amazon.com/images/I/61-6nKPKyWL.js?AUIClients/AmazonUIjQuery:30)
+  success (https://images-na.ssl-images-amazon.com/images/I/41zOaXFljyL._RC%7C71DxpFqM1iL.js,61ACKXDdUsL.js,41gNKoK0s7L.js,11nffi0GnAL.js,21qd6OezMHL.js,11k47yUMOjL.js,41SZNgvX4oL.js,51pktuVkksL.js,31pymwzQBWL.js,01KW1GJCT1L.js,31PkUbXQSXL.js_.js?AUIClients/NavDesktopUberAsset&Y8X+j2fQ#desktop.320369-T1.339679-T1:40)
+  resolveWith (https://images-na.ssl-images-amazon.com/images/I/61-6nKPKyWL.js?AUIClients/AmazonUIjQuery:47)
+  d (https://images-na.ssl-images-amazon.com/images/I/61-6nKPKyWL.js?AUIClients/AmazonUIjQuery:162)
+  b (https://images-na.ssl-images-amazon.com/images/I/61-6nKPKyWL.js?AUIClients/AmazonUIjQuery:173)
+
+  phantomjs://platform/console++.js:263 in error
