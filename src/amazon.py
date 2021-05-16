@@ -1,5 +1,5 @@
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 import random,pickle,os,time,sys,requests
 from bs4 import BeautifulSoup
 from re import sub
@@ -30,9 +30,9 @@ class AmazonAutomation():
             self.homeLink = Lines[1]
             self.link = Lines[2]
     
-        if item == "3080":
-            self.lowerBound = 800
-            self.upperBound = 1200
+        if item == "3080a":
+            self.lowerBound = 700
+            self.upperBound = 1300
             self.file = Lines[0]
             self.homeLink = Lines[1]
             self.link = Lines[3]
@@ -44,7 +44,19 @@ class AmazonAutomation():
             self.homeLink = Lines[1]
             self.link = Lines[4]
 
-        botNavigator.close()
+        if item == "3080e":
+            self.lowerBound = 700
+            self.upperBound = 1300
+            self.file = Lines[0]
+            self.homeLink = Lines[1]
+            self.link = Lines[5]
+        
+        if item == "":
+            self.lowerBound = 1000
+            self.upperBound = 1500
+            self.file = Lines[0]
+            self.homeLink = Lines[1]
+            #self.link = "https://www.amazon.com/gp/product/B08Z7DXHP5/ref=ox_sc_act_title_1?smid=A3TY2V73IP9GIS&psc=1"
 
     def tearDown(self):
         self.driver.close()
@@ -59,16 +71,56 @@ class AmazonAutomation():
         self.tearDown()
         
     def placeOrder(self):
-        self.driver.find_element_by_xpath("//input[@id='add-to-cart-button']").click()
-        self.driver.find_element_by_xpath("//a[@id='hlb-ptc-btn-native']").click()
-        self.driver.find_element_by_xpath("//input[@name='placeYourOrder1']").click() #THIS WILL PLACE THE ORDER -- DO NOT REMOVE UNLESS YOU ARE WILLING TO PURCHASE
+        print("Placing order")
+        waiting = WebDriverWait(self.driver,10)
+        button = None
+        #(submitBtnClick.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/section/main/div[2]/div[1]/div/div/div/div/form/div[4]")))).click()
+
+        #self.driver.find_element_by_xpath("//input[@id='add-to-cart-button']").click()
+        #self.driver.find_element_by_xpath("//input[@aria-labelledby='attachSiNoCoverage-announce']").click()
+        #self.driver.find_element_by_xpath("//a[@id='hlb-ptc-btn-native']").click()
+        #self.driver.find_element_by_xpath("//input[@name='placeYourOrder1']").click() #THIS WILL PLACE THE ORDER -- DO NOT REMOVE UNLESS YOU ARE WILLING TO PURCHASE
+        try:
+            addToCart = (waiting.until(EC.element_to_be_clickable((By.XPATH, "//input[@id='add-to-cart-button']")))).click()
+
+            noThanks = (waiting.until(EC.element_to_be_clickable((By.XPATH, "//input[@aria-labelledby='attachSiNoCoverage-announce']"))))
+            button = noThanks
+            noThanks.click()
+            
+            self.driver.get("https://www.amazon.com/gp/cart/view.html?ref_=nav_cart")
+            checkoutButton = (waiting.until(EC.element_to_be_clickable((By.XPATH, "//input[@name='proceedToRetailCheckout']"))))
+            button = checkoutButton
+            checkoutButton.click()
+            
+            placeOrder = (waiting.until(EC.element_to_be_clickable((By.XPATH, "//input[@name='placeYourOrder1']"))))#THIS WILL PLACE THE ORDER -- DO NOT REMOVE UNLESS YOU ARE WILLING TO PURCHASE
+            button = placeOrder
+            placeOrder.click()
+        
+        except NoSuchElementException:
+            try:
+                itemFound = open('itemFound.txt', 'a')
+                itemFound.write("Could not find" + button.text + '\n')
+                itemFound.close()
+            except Exception as e:
+                itemFound = open('itemFound.txt', 'a')
+                itemFound.write("Something went wrong in NoSuchElementException" + e + '\n')
+                itemFound.close()
+        except TimeoutException:
+            itemFound = open('itemFound.txt', 'a')
+            itemFound.write("waited and nothing came back\n")
+            itemFound.close()
+        except Exception as e:
+            itemFound = open('itemFound.txt', 'a')
+            itemFound.write(e + '\n')
+            itemFound.close()
 
     def checkAvailability(self):
-        
+        boolean = True
+
         if(self.link != self.driver.current_url):
             print("it is not equal")
             self.driver.get(self.link)
-        boolean = True
+        
         while(boolean):
             k = random.randint(5, 15)            
             try:
@@ -157,21 +209,17 @@ class AmazonAutomation():
         loginCredentials = open('loginCredentials.txt', 'r')
         Lines = loginCredentials.readlines()
         loginCredentials.close()
-        signInBtn = self.driver.find_element_by_xpath("//span[@class='nav-line-2 nav-long-width']")
-        signInBtn.click()
+        wait = WebDriverWait(self.driver,10)
 
-        username = self.driver.find_element_by_name('email')
-        username.send_keys(Lines[0])
-       
-        self.driver.find_element_by_id('signInSubmit').click()
-
-        password = self.driver.find_element_by_id('ap_password')
-        password.send_keys(Lines[1])
+        (wait.until(EC.element_to_be_clickable((By.XPATH, "//span[@id='nav-link-accountList-nav-line-1']")))).click()
+        (wait.until(EC.element_to_be_clickable((By.NAME, 'email')))).send_keys(Lines[0])
+        (wait.until(EC.element_to_be_clickable((By.ID, 'signInSubmit')))).click()
+        (wait.until(EC.element_to_be_clickable((By.XPATH, "//input[@name='rememberMe']")))).click()
+        (wait.until(EC.element_to_be_clickable((By.ID, 'ap_password')))).send_keys(Lines[1])
         
-        self.driver.find_element_by_name("rememberMe").click()
-        self.driver.find_element_by_id('signInSubmit').click()
 
         time.sleep(3) #DO NOT REMOVE --  This is needed in order for the cookies to load properly
+        print("done")
 
     #https://www.amazon.com/EVGA-GeForce-Technology-Backplate-24G-P5-3987-KR/dp/B08J5F3G18
     #https://www.amazon.com/gp/product/B079KYZ9FW?pf_rd_r=4ZYXRC10NATBQ9J26K1P&pf_rd_p=5ae2c7f8-e0c6-4f35-9071-dc3240e894a8&pd_rd_r=39d8b0c5-6ca8-41a8-973c-da08ddc08960&pd_rd_w=dcGK4&pd_rd_wg=cUqPu&ref_=pd_gw_unk
@@ -182,9 +230,13 @@ if __name__ == "__main__":
     taskmaster.setWebsiteLocation()
     taskmaster.checkCookies()
     taskmaster.tearDown()
-
+    '''
+    taskmaster = AmazonAutomation(False, "")
+    testThread = threading.Thread(target=taskmaster.executeTest, args=())
+    testThread.start()
+    '''
     #3090
-    for _ in range(1):
+    for _ in range(2):
         taskmaster = AmazonAutomation(True, "3090")
         testThread = threading.Thread(target=taskmaster.executeTest, args=())
         testThread.start()
@@ -192,20 +244,21 @@ if __name__ == "__main__":
     testThread = threading.Thread(target=taskmaster.executeTest, args=())
     testThread.start()
 
-    #3080
-    for _ in range(1):
-        taskmaster = AmazonAutomation(True, "3080")
+    #3080 asus
+    for _ in range(2):
+        taskmaster = AmazonAutomation(True, "3080a")
         testThread = threading.Thread(target=taskmaster.executeTest, args=())
         testThread.start()
-    taskmaster = AmazonAutomation(False, "3080")
+    taskmaster = AmazonAutomation(False, "3080a")
     testThread = threading.Thread(target=taskmaster.executeTest, args=())
     testThread.start()
 
-    #PS4
-    for _ in range(1):
-        taskmaster = AmazonAutomation(True, "PS4")
+    #3080 evga
+    for _ in range(2):
+        taskmaster = AmazonAutomation(True, "3080e")
         testThread = threading.Thread(target=taskmaster.executeTest, args=())
         testThread.start()
-    taskmaster = AmazonAutomation(False, "PS4")
+    taskmaster = AmazonAutomation(False, "3080e")
     testThread = threading.Thread(target=taskmaster.executeTest, args=())
     testThread.start()
+    

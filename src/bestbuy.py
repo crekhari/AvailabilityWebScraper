@@ -75,7 +75,7 @@ class BestBuyAutomation():
         password = self.driver.find_element_by_name('fld-p1')
 
         username.send_keys(Lines[0])
-        password.send_keys(Lines[1])
+        password.send_keys(Lines[2])
 
         submitBtnClick = WebDriverWait(self.driver,10)
         submitBtnClick = (submitBtnClick.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/section/main/div[2]/div[1]/div/div/div/div/form/div[4]")))).click()
