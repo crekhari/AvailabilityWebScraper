@@ -11,10 +11,7 @@ import threading
 
 class AmazonAutomation():
 
-    def __init__(self, headless, item):
-        botNavigator = open('botNavigator.txt', 'r')
-        Lines = botNavigator.readlines()
-        botNavigator.close()
+    def __init__(self, headless, pickleFile, homeLink, link, upperBound, lowerBound):
 
         if headless == True:
             options = webdriver.ChromeOptions()
@@ -23,40 +20,12 @@ class AmazonAutomation():
         if headless == False:
             self.driver = webdriver.Chrome('/Users/chiraag/chromedriver')
     
-        if item == "3090":
-            self.lowerBound = 1500
-            self.upperBound = 2000
-            self.file = Lines[0]
-            self.homeLink = Lines[1]
-            self.link = Lines[2]
-    
-        if item == "3080a":
-            self.lowerBound = 700
-            self.upperBound = 1300
-            self.file = Lines[0]
-            self.homeLink = Lines[1]
-            self.link = Lines[3]
-
-        if item == "PS4":
-            self.lowerBound = 340
-            self.upperBound = 420
-            self.file = Lines[0]
-            self.homeLink = Lines[1]
-            self.link = Lines[4]
-
-        if item == "3080e":
-            self.lowerBound = 700
-            self.upperBound = 1300
-            self.file = Lines[0]
-            self.homeLink = Lines[1]
-            self.link = Lines[5]
-        
-        if item == "":
-            self.lowerBound = 1000
-            self.upperBound = 1500
-            self.file = Lines[0]
-            self.homeLink = Lines[1]
-            #self.link = "https://www.amazon.com/gp/product/B08Z7DXHP5/ref=ox_sc_act_title_1?smid=A3TY2V73IP9GIS&psc=1"
+        self.file = pickleFile
+        self.homeLink = homeLink
+        self.link = link
+        self.upperBound = upperBound
+        self.lowerBound = lowerBound
+        #print(pickleFile + homeLink + link + str(upperBound) + str(lowerBound) + '\n')
 
     def tearDown(self):
         self.driver.close()
@@ -225,40 +194,43 @@ class AmazonAutomation():
     #https://www.amazon.com/gp/product/B079KYZ9FW?pf_rd_r=4ZYXRC10NATBQ9J26K1P&pf_rd_p=5ae2c7f8-e0c6-4f35-9071-dc3240e894a8&pd_rd_r=39d8b0c5-6ca8-41a8-973c-da08ddc08960&pd_rd_w=dcGK4&pd_rd_wg=cUqPu&ref_=pd_gw_unk
 
 if __name__ == "__main__":
-    
-    taskmaster = AmazonAutomation(True, "3090")
+    botNavigator = open('botNavigator.txt', 'r')
+    Lines = botNavigator.readlines()
+    botNavigator.close()
+
+    numThreads = int(Lines[0])
+    pickleFile = Lines[1]
+    homeLink = Lines[2]
+
+    taskmaster = AmazonAutomation(True, pickleFile, homeLink, Lines[3], Lines[4], Lines[5]) #This is to check if the cookies file has the correct or expired cookies
     taskmaster.setWebsiteLocation()
     taskmaster.checkCookies()
     taskmaster.tearDown()
-    '''
-    taskmaster = AmazonAutomation(False, "")
-    testThread = threading.Thread(target=taskmaster.executeTest, args=())
-    testThread.start()
-    '''
-    #3090
-    for _ in range(2):
-        taskmaster = AmazonAutomation(True, "3090")
-        testThread = threading.Thread(target=taskmaster.executeTest, args=())
-        testThread.start()
-    taskmaster = AmazonAutomation(False, "3090")
-    testThread = threading.Thread(target=taskmaster.executeTest, args=())
-    testThread.start()
+    Lines.pop(0)
+    Lines.pop(0)
+    Lines.pop(0)
 
-    #3080 asus
-    for _ in range(2):
-        taskmaster = AmazonAutomation(True, "3080a")
-        testThread = threading.Thread(target=taskmaster.executeTest, args=())
-        testThread.start()
-    taskmaster = AmazonAutomation(False, "3080a")
-    testThread = threading.Thread(target=taskmaster.executeTest, args=())
-    testThread.start()
-
-    #3080 evga
-    for _ in range(2):
-        taskmaster = AmazonAutomation(True, "3080e")
-        testThread = threading.Thread(target=taskmaster.executeTest, args=())
-        testThread.start()
-    taskmaster = AmazonAutomation(False, "3080e")
-    testThread = threading.Thread(target=taskmaster.executeTest, args=())
-    testThread.start()
+    
+    for _ in range(numThreads):
+        for x in range(0, len(Lines), 3):
+            link = Lines[x]
+            upperBound = int(Lines[x+1])
+            lowerBound = int(Lines[x+2])
+            #print("link is: " + link + " upperBound is: " + str(upperBound) + " lowerBound is: " + str(lowerBound) + '\n')
+            taskmaster = AmazonAutomation(True, pickleFile, homeLink, link, upperBound, lowerBound)
+            driverThread = threading.Thread(target=taskmaster.executeTest, args=())
+            driverThread.start()
+        print("Headless Thread created\n")
+    '''
+    for _ in range(1):
+        for x in range(0, len(Lines), 3):
+            link = Lines[x]
+            upperBound = int(Lines[x+1])
+            lowerBound = int(Lines[x+2])
+            #print("link is: " + link + " upperBound is: " + str(upperBound) + " lowerBound is: " + str(lowerBound) + '\n')
+            taskmaster = AmazonAutomation(False, pickleFile, homeLink, link, upperBound, lowerBound)
+            driverThread = threading.Thread(target=taskmaster.executeTest, args=())
+            driverThread.start()
+        print("Debuggin Head Thread created\n")
+    '''
     
